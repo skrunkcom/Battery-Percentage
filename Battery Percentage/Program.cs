@@ -30,21 +30,11 @@ namespace IngameScript
       
         public void Main(string argument, UpdateType updateSource)
         {
-            float AvgSp;
-            float AvgMsp;
-            float AvgOp;
-            float SumSp = 0;   //Sum of sp
-            float SumMsp = 0;  //average of msp
-            float Sumop = 0;   //average of op
-
             var batts = new List<IMyBatteryBlock>();
             GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts);
             var mybatts = new List<IMyBatteryBlock>();
             
-            int pb; //Power Bar
-            int pn; //Power Now
-            int pa; //Power Avg
-            
+            // Filter out only batteries on our grid
             foreach (IMyBatteryBlock batt in batts)
             {
                 long bg = batt.CubeGrid.EntityId; // Battery on Grid of programmable block
@@ -54,7 +44,11 @@ namespace IngameScript
                     mybatts.Add(batt);
                 }
             }
-            
+
+            /* Calcaulate sum of values */
+            float SumSp = 0;   //Sum of sp
+            float SumMsp = 0;  //average of msp
+            float Sumop = 0;   //average of op
             foreach (IMyBatteryBlock mybatt in mybatts)
             {
                 float Sp;  //Stored Power
@@ -68,9 +62,16 @@ namespace IngameScript
                 SumMsp = SumMsp + Msp;
                 Sumop = Sumop + Op;  
             }
-            AvgSp = SumSp / mybatts.Count;
-            AvgMsp = SumMsp / mybatts.Count;
-            AvgOp = Sumop / mybatts.Count;
+            // Take averages of sums
+            float AvgSp = SumSp / mybatts.Count;
+            float AvgMsp = SumMsp / mybatts.Count;
+            float AvgOp = Sumop / mybatts.Count;
+
+
+
+            int pb; //Power Bar
+            int pn; //Power Now
+            int pa; //Power Avg
         }
     }
 
