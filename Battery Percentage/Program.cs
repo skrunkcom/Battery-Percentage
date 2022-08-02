@@ -22,10 +22,13 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
+        const int ITERS_PER_SEC = 6;
+        List<int> prev_averages;
 
         public Program()
         {
-            Runtime.UpdateFrequency = UpdateFrequency.Update1;
+            Runtime.UpdateFrequency = UpdateFrequency.Update10;
+            pa = new List<>(ITERS_PER_SEC);
         }
       
         public void Main(string argument, UpdateType updateSource)
@@ -72,6 +75,25 @@ namespace IngameScript
             int pb; //Power Bar
             int pn; //Power Now
             int pa; //Power Avg
+
+            float charge_ratio = AvgSp / AvgMsp;
+            pb = (int) (charge_ratio * 10); // it's good to round down here.
+
+            float hours_left = AvgSp / AvgOp;
+            pn = (int) (hours_left * 60 * 60); // convert to seconds
+
+            if(pa.Count >= ITERS_PER_SEC)
+            {
+                pa.RemoveAt(ITERS_PER_SEC - 1);
+            }
+
+            pa.Add(pn);
+            int prev_sum = 0;
+            foreach(var p in prev_averages)
+            {
+                prev_sum += p;
+            }
+            pa = prev_sum / pa.Count;
         }
     }
 
