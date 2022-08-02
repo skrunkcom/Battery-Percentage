@@ -30,12 +30,54 @@ namespace IngameScript
       
         public void Main(string argument, UpdateType updateSource)
         {
+            float AvgSp;
+            float AvgMsp;
+            float AvgOp;
+            float SumSp = 0;   //Sum of sp
+            float SumMsp = 0;  //average of msp
+            float Sumop = 0;   //average of op
 
+            var batts = new List<IMyBatteryBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts);
+            var mybatts = new List<IMyBatteryBlock>();
+            
+            int pb; //Power Bar
+            int pn; //Power Now
+            int pa; //Power Avg
+            
+            foreach (IMyBatteryBlock batt in batts)
+            {
+                long bg = batt.CubeGrid.EntityId; // Battery on Grid of programmable block
+                long cg = Me.CubeGrid.EntityId;   // Grid on the programmable block
+                if (cg == bg)
+                {
+                    mybatts.Add(batt);
+                }
+            }
+            
+            foreach (IMyBatteryBlock mybatt in mybatts)
+            {
+                float Sp;  //Stored Power
+                float Msp; //Max Stored Power
+                float Op;  // Output
+                Sp = mybatt.CurrentStoredPower;
+                Msp = mybatt.MaxStoredPower;
+                Op = mybatt.CurrentOutput;
+
+                SumSp = SumSp + Sp;
+                SumMsp = SumMsp + Msp;
+                Sumop = Sumop + Op;  
+            }
+            AvgSp = SumSp / mybatts.Count;
+            AvgMsp = SumMsp / mybatts.Count;
+            AvgOp = Sumop / mybatts.Count;
         }
     }
+
 }
 /*    -- LCD --
- * stored, output. Stored power represented as |█| (mulitples of 10%)
+ * stored, max stored, output
+                                Stored power represented as |█| (mulitples of 10%)
  *                              Stored Power: |█|█|█|█|█|█|█|█|█|█|
  *                              1h (now)
  *                              30m (past 5m of  usage)
