@@ -48,29 +48,9 @@ namespace IngameScript
             // Filter out only batteries on our grid
             GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
 
-            /* Calcaulate sum of values */
-            float SumSp = 0;   //Sum of sp
-            float SumMsp = 0;  //average of msp
-            float Sumop = 0;   //average of op
-            foreach (IMyBatteryBlock mybatt in batts)
-            {
-                float Sp;  //Stored Power
-                float Msp; //Max Stored Power
-                float Op;  // Output
-                Sp = mybatt.CurrentStoredPower;
-                Msp = mybatt.MaxStoredPower;
-                Op = mybatt.CurrentOutput;
-
-                SumSp = SumSp + Sp;
-                SumMsp = SumMsp + Msp;
-                Sumop = Sumop + Op;  
-            }
-            // Take averages of sums
-            float AvgSp = SumSp / batts.Count;
-            float AvgMsp = SumMsp / batts.Count;
-            float AvgOp = Sumop / batts.Count;
-
-
+            float AvgSp = batts.Sum(bat => bat.CurrentStoredPower) / batts.Count;
+            float AvgMsp = batts.Sum(bat => bat.MaxStoredPower) / batts.Count;
+            float AvgOp = batts.Sum(bat => bat.CurrentOutput) / batts.Count;
 
             int pb; //Power Bar
             int pn; //Power Now
