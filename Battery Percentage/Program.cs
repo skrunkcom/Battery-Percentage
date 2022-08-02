@@ -36,7 +36,7 @@ namespace IngameScript
 }
 /* stored, output. Stored power represented as |█| (mulitples of 10%)
  *                              Stored Power: |█|█|█|█|█|█|█|█|█|█|
- *                              Displayed on seperate montior:
+ *                              Displayed on seperate montior:sssssss
  *                              1h (now)
  *                              30m (past 5m of  usage)
  */
