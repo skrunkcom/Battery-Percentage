@@ -42,26 +42,17 @@ namespace IngameScript
       
         public void Main(string argument, UpdateType updateSource)
         {
+            long my_grid = Me.CubeGrid.EntityId;
+
             var batts = new List<IMyBatteryBlock>();
-            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts);
-            var mybatts = new List<IMyBatteryBlock>();
-            
             // Filter out only batteries on our grid
-            foreach (IMyBatteryBlock batt in batts)
-            {
-                long bg = batt.CubeGrid.EntityId; // Battery on Grid of programmable block
-                long cg = Me.CubeGrid.EntityId;   // Grid on the programmable block
-                if (cg == bg)
-                {
-                    mybatts.Add(batt);
-                }
-            }
+            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
 
             /* Calcaulate sum of values */
             float SumSp = 0;   //Sum of sp
             float SumMsp = 0;  //average of msp
             float Sumop = 0;   //average of op
-            foreach (IMyBatteryBlock mybatt in mybatts)
+            foreach (IMyBatteryBlock mybatt in batts)
             {
                 float Sp;  //Stored Power
                 float Msp; //Max Stored Power
@@ -75,9 +66,9 @@ namespace IngameScript
                 Sumop = Sumop + Op;  
             }
             // Take averages of sums
-            float AvgSp = SumSp / mybatts.Count;
-            float AvgMsp = SumMsp / mybatts.Count;
-            float AvgOp = Sumop / mybatts.Count;
+            float AvgSp = SumSp / batts.Count;
+            float AvgMsp = SumMsp / batts.Count;
+            float AvgOp = Sumop / batts.Count;
 
 
 
