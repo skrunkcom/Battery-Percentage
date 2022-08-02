@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /Battery\ Percentage/MDK/MDK.paths.props
+/*Backup*.zip
+
+/Battery\ Percentage/bin/
+/Battery\ Percentage/obj/
