@@ -22,13 +22,22 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
+        const string LCD_NAME = "LCD [Power]";
+
         const int ITERS_PER_SEC = 6;
+        const int ITERS_AVG = ITERS_PER_SEC * 60 * 5;
         List<int> prev_averages;
 
         public Program()
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
             pa = new List<>(ITERS_PER_SEC);
+        }
+
+
+        static string GetLCDSecondsStr(int seconds)
+        {
+            return TimeSpan.FromSeconds(seconds).ToString(@"hh\:mm\:ss") + " remaining";
         }
       
         public void Main(string argument, UpdateType updateSource)
@@ -82,18 +91,37 @@ namespace IngameScript
             float hours_left = AvgSp / AvgOp;
             pn = (int) (hours_left * 60 * 60); // convert to seconds
 
-            if(pa.Count >= ITERS_PER_SEC)
+            if(pa.Count >= ITERS_AVG)
             {
-                pa.RemoveAt(ITERS_PER_SEC - 1);
+                pa.RemoveAt(0);
             }
-
             pa.Add(pn);
-            int prev_sum = 0;
-            foreach(var p in prev_averages)
+
+            pa = prev_averages.Sum() / pa.Count;
+
+            /* Write to LCD */
+            IMyTextSurface txt = (IMyTextSurface) GridTerminalSystem.GetBlockWithName(LCD_NAME);
+
+            var buf = new StringBuilder();
+
+            int a = 1;
+            while(a < 10)
             {
-                prev_sum += p;
+                buf.Append('|');
+                if(pb >= a) {
+                    buf.Append("█");
+                } else {
+                    buf.Append(' ');
+                }
+
+                ++a;
             }
-            pa = prev_sum / pa.Count;
+            buf.AppendLine('|');
+
+            buf.AppendLine(GetLCDSecondsStr(pn));
+            buf.Append(GetLCDSecondsStr(pa)).AppendLine(" (5m)");
+
+            txt.WriteText(buf.ToString());
         }
     }
 
