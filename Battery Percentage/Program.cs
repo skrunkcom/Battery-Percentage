@@ -34,11 +34,18 @@ namespace IngameScript
         }
     }
 }
-/* stored, output. Stored power represented as |█| (mulitples of 10%)
+/*    -- LCD --
+ * stored, output. Stored power represented as |█| (mulitples of 10%)
  *                              Stored Power: |█|█|█|█|█|█|█|█|█|█|
- *                              Displayed on seperate montior:sssssss
  *                              1h (now)
  *                              30m (past 5m of  usage)
- *                             
- * This is a test.
+ */
+
+
+/*    -- Planning Lvl 1 --
+ *    
+ *    We want write to the LCD based on the values of some types.
+ *                              Stored Power: int (value 0-10)
+ *                              time: int (seconds of power) 
+ *                              time (5m): int (seconds of power)
  */
