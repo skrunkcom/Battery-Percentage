@@ -63,9 +63,9 @@ namespace IngameScript
                 Sumop = Sumop + Op;  
             }
             // Take averages of sums
-            float AvgSp = SumSp / mybatts.Count;   // Average of Stored Power to be represented as Power Bar 0-10 (Mwh)
-            float AvgMsp = SumMsp / mybatts.Count; // Average of Max Stored Power represented as Mwh
-            float AvgOp = Sumop / mybatts.Count;   // Average of Output represented in change of output to display new time left in Mwh
+            float AvgSp = SumSp / mybatts.Count;   // Stored Power in MWh
+            float AvgMsp = SumMsp / mybatts.Count; // Max stored power in MWh
+            float AvgOp = Sumop / mybatts.Count;   // Output in MW
 
 
 
