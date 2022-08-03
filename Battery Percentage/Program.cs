@@ -69,9 +69,15 @@ namespace IngameScript
 
 
 
-            int pb; //Power Bar
-            int pn; //Power Now
-            int pa; //Power Avg
+            int pb = (int)(AvgSp / AvgMsp * 10); // Power in Seconds
+            Echo(pb.ToString());
+
+
+
+            int pn = (int)(AvgSp / AvgOp * 60 * 60);
+            string seconds = TimeSpan.FromSeconds(pn).ToString(@"hh\:mm\:ss") + "remaining";
+            Echo(seconds);
+
         }
     }
 
