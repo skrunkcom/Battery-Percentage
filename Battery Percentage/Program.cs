@@ -63,9 +63,9 @@ namespace IngameScript
                 Sumop = Sumop + Op;  
             }
             // Take averages of sums
-            float AvgSp = SumSp / mybatts.Count;
-            float AvgMsp = SumMsp / mybatts.Count;
-            float AvgOp = Sumop / mybatts.Count;
+            float AvgSp = SumSp / mybatts.Count;   //
+            float AvgMsp = SumMsp / mybatts.Count; //
+            float AvgOp = Sumop / mybatts.Count;   //
 
 
 
