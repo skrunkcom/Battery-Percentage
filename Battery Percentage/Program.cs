@@ -68,17 +68,19 @@ namespace IngameScript
                 float AvgOp = Sumop / mybatts.Count;   // Output in MW
 
 
-
-                int pb = (int)(AvgSp / AvgMsp * 10); // Power in Seconds
+                //Power Bar 0-10
+                int pb = (int)(AvgSp / AvgMsp * 10);
                 Echo(pb.ToString());
 
 
-
-                int pn = (int)(AvgSp / AvgOp * 60 * 60);
+                // Power in Seconds
+                int pn = (int)(AvgSp / AvgOp * 60 * 60); 
                 string seconds = TimeSpan.FromSeconds(pn).ToString(@"ddd\.hh\:mm\:ss") + " remaining";
                 Echo(seconds);
 
-            }
+            int gfy;
+
+        }
     }
 
 }
