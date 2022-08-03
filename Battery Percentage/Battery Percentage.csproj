@@ -45,7 +45,9 @@
     <AdditionalFiles Include="MDK\MDK.paths.props">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
-    <Compile Include="Program.cs" />
+    <Compile Include="..\..\..\..\Desktop\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
     <AdditionalFiles Include="Instructions.readme" />
     <AdditionalFiles Include="thumb.png" />
     <AdditionalFiles Include="MDK\whitelist.cache" />
