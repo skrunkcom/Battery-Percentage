@@ -37,7 +37,7 @@ namespace IngameScript
 
         static string GetLCDSecondsStr(int seconds)
         {
-            return TimeSpan.FromSeconds(seconds).ToString(@"hh\:mm\:ss") + " remaining";
+            return TimeSpan.FromSeconds(seconds).ToString(@"ddd\.hh\:mm\:ss") + " remaining";
         }
 
         List<IMyBatteryBlock> getBatteries()
