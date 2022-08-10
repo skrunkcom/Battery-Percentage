@@ -24,41 +24,64 @@ namespace IngameScript
     {
         const string LCD_NAME = "LCD [Power]";
 
+        const Func<Func<IMyBatteryBlock, float>, float> batAvg = bat_func => {
+            return batts.Select(bat_func).Average();
+        };
         const int ITERS_PER_SEC = 6;
         const int ITERS_AVG = ITERS_PER_SEC * 60 * 5;
+        const int REFRESH_DELAY_SEC = 5;
+
         List<int> prev_averages;
+        int tick_wait;
+
+        // cached
+        List<IMyBatteryBlock> batts;
+        float AvgMsp;
+
+
+        void reset()
+		{
+            tick_wait = REFRESH_DELAY_SEC * ITERS_PER_SEC;
+		}
 
         public Program()
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
+
             pa = new List<>(ITERS_PER_SEC);
+
+            batts = new List<IMyBatteryBlock>();
         }
+
+
+        void refreshBatteries()
+		{
+            long my_grid = Me.CubeGrid.EntityId;
+
+            batts.Clear();
+            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
+		}
+
+        void refreshCache() {
+            refreshBatteries();
+            AvgMsp = batAvg(bat => bat.MaxStoredPower);
+		}
 
 
         static string GetLCDSecondsStr(int seconds)
         {
             return TimeSpan.FromSeconds(seconds).ToString(@"ddd\.hh\:mm\:ss") + " remaining";
         }
-
-        List<IMyBatteryBlock> getBatteries()
-		{
-            long my_grid = Me.CubeGrid.EntityId;
-
-            var bats = new List<IMyBatteryBlock>();
-            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
-            return bats;
-		}
       
         public void Main(string argument, UpdateType updateSource)
         {
-            var batts = getBatteries();
+            if(--tick_wait <= 0) {
+                refreshCache();
 
-            Func<Func<IMyBatteryBlock, float>, float> batAvg = bat_func => {
-                return batts.Select(bat_func).Average();
-			};
+                reset();
+			}
 
             float AvgSp = batAvg(bat=> bat.CurrentStoredPower);
-            float AvgMsp = batAvg(bat => bat.MaxStoredPower);
             float AvgOp = batAvg(bat => bat.CurrentOutput);
 
             int pb; //Power Bar
