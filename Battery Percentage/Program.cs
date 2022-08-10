@@ -95,7 +95,8 @@ namespace IngameScript
 		{
             int pb; //Power Bar
 
-            pb = br.AvgSp * 10 / br.AvgMsp; // it's good to round down here.
+            float charge_ratio = br.AvgSp / br.AvgMsp;
+            pb = (int) (charge_ratio * 10); // it's good to round down here.
 
             /* Write to LCD */
             byte a = 1;
