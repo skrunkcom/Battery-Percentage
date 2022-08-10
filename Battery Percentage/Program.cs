@@ -32,6 +32,8 @@ namespace IngameScript
         int tick_wait;
 
         // cached
+        IMyTextSurface txt;
+        StringBuilder txtBuf;
         List<IMyBatteryBlock> batts;
         float AvgMsp;
 
@@ -45,8 +47,9 @@ namespace IngameScript
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
 
-            pa = new List<>(ITERS_PER_SEC);
+            prev_averages = new List<int>(ITERS_PER_SEC);
 
+            txtBuf = new StringBuilder();
             batts = new List<IMyBatteryBlock>();
         }
 
@@ -60,16 +63,64 @@ namespace IngameScript
 		}
 
         void refreshCache() {
+            txt = (IMyTextSurface) GridTerminalSystem.GetBlockWithName(LCD_NAME);
+
             refreshBatteries();
             AvgMsp = batts.Select(bat => bat.MaxStoredPower).Average();
 		}
 
+        struct BatteryTickResult {
+            public float AvgSp;  // Stored Power in MWh
+            public float AvgMsp; // Max stored power in MWh
+            public float AvgOp;  // Output in MW
+        }
 
-        static string GetLCDSecondsStr(int seconds)
+        BatteryTickResult BatteryTick()
+		{
+            BatteryTickResult result;
+
+            result.AvgMsp = AvgMsp;
+            result.AvgSp = batts.Select(bat=> bat.CurrentStoredPower).Average();
+            result.AvgOp = batts.Select(bat => bat.CurrentOutput).Average();
+
+            return result;
+		}
+
+        static string GetPowerTime(int seconds)
         {
             return TimeSpan.FromSeconds(seconds).ToString(@"ddd\.hh\:mm\:ss") + " remaining";
         }
-      
+
+        void WriteOut(ref BatteryTickResult br, int power_now, int power_output_5m)
+		{
+            int pb; //Power Bar
+
+            float charge_ratio = br.AvgSp / br.AvgMsp;
+            pb = (int) (charge_ratio * 10); // it's good to round down here.
+
+            /* Write to LCD */
+            int a = 1;
+            while(a < 10)
+            {
+                txtBuf.Append('|');
+                if(pb >= a) {
+                    txtBuf.Append("█");
+                } else {
+                    txtBuf.Append(" ");
+                }
+
+                ++a;
+            }
+            txtBuf.AppendLine("|");
+
+            txtBuf.AppendLine(GetPowerTime(power_now));
+            txtBuf.Append(GetPowerTime(power_output_5m)).AppendLine(" (5m)");
+
+            string txtWr = txtBuf.ToString();
+            txtBuf.Clear();
+            txt.WriteText(txtWr);
+		}
+
         public void Main(string argument, UpdateType updateSource)
         {
             if(--tick_wait <= 0) {
@@ -78,50 +129,19 @@ namespace IngameScript
                 reset();
 			}
 
-            float AvgSp = batts.Select(bat=> bat.CurrentStoredPower).Average();
-            float AvgOp = batts.Select(bat => bat.CurrentOutput).Average();
+            BatteryTickResult br = BatteryTick();
 
-            int pb; //Power Bar
-            int pn; //Power Now
-            int pa; //Power Avg
-
-            float charge_ratio = AvgSp / AvgMsp;
-            pb = (int) (charge_ratio * 10); // it's good to round down here.
-
-            float hours_left = AvgSp / AvgOp;
-            pn = (int) (hours_left * 60 * 60); // convert to seconds
+            int power_now;
+            float hours_left = br.AvgSp / br.AvgOp;
+            power_now = (int) (hours_left * 60 * 60); // convert to seconds
 
             if(prev_averages.Count >= ITERS_AVG)
             {
                 prev_averages.RemoveAt(0);
             }
-            prev_averages.Add(pn);
+            prev_averages.Add(power_now);
 
-            pa = prev_averages.Average();
-
-            /* Write to LCD */
-            IMyTextSurface txt = (IMyTextSurface) GridTerminalSystem.GetBlockWithName(LCD_NAME);
-
-            var buf = new StringBuilder();
-
-            int a = 1;
-            while(a < 10)
-            {
-                buf.Append('|');
-                if(pb >= a) {
-                    buf.Append("█");
-                } else {
-                    buf.Append(' ');
-                }
-
-                ++a;
-            }
-            buf.AppendLine('|');
-
-            buf.AppendLine(GetLCDSecondsStr(pn));
-            buf.Append(GetLCDSecondsStr(pa)).AppendLine(" (5m)");
-
-            txt.WriteText(buf.ToString());
+            WriteOut(ref br, power_now, prev_averages.Sum() / prev_averages.Count);
         }
     }
 
