@@ -54,7 +54,7 @@ namespace IngameScript
             var batts = getBatteries();
 
             Func<Func<IMyBatteryBlock, float>, float> batAvg = bat_func => {
-                return batts.Sum(bat_func) / batts.Count;
+                return batts.Select(bat_func).Average();
 			};
 
             float AvgSp = batAvg(bat=> bat.CurrentStoredPower);
@@ -77,7 +77,7 @@ namespace IngameScript
             }
             prev_averages.Add(pn);
 
-            pa = prev_averages.Sum() / pa.Count;
+            pa = prev_averages.Average();
 
             /* Write to LCD */
             IMyTextSurface txt = (IMyTextSurface) GridTerminalSystem.GetBlockWithName(LCD_NAME);
