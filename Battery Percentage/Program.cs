@@ -39,18 +39,27 @@ namespace IngameScript
         {
             return TimeSpan.FromSeconds(seconds).ToString(@"hh\:mm\:ss") + " remaining";
         }
+
+        List<IMyBatteryBlock> getBatteries()
+		{
+            long my_grid = Me.CubeGrid.EntityId;
+
+            var bats = new List<IMyBatteryBlock>();
+            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
+            return bats;
+		}
       
         public void Main(string argument, UpdateType updateSource)
         {
-            long my_grid = Me.CubeGrid.EntityId;
+            var batts = getBatteries();
 
-            var batts = new List<IMyBatteryBlock>();
-            // Filter out only batteries on our grid
-            GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
+            Func<Func<IMyBatteryBlock, float>, float> batAvg = bat_func => {
+                return batts.Sum(bat_func) / batts.Count;
+			};
 
-            float AvgSp = batts.Sum(bat => bat.CurrentStoredPower) / batts.Count;
-            float AvgMsp = batts.Sum(bat => bat.MaxStoredPower) / batts.Count;
-            float AvgOp = batts.Sum(bat => bat.CurrentOutput) / batts.Count;
+            float AvgSp = batAvg(bat=> bat.CurrentStoredPower);
+            float AvgMsp = batAvg(bat => bat.MaxStoredPower);
+            float AvgOp = batAvg(bat => bat.CurrentOutput);
 
             int pb; //Power Bar
             int pn; //Power Now
