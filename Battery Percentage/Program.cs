@@ -40,9 +40,9 @@ namespace IngameScript
 
 
         void reset()
-		{
+        {
             tick_wait = REFRESH_DELAY_SEC * ITERS_PER_SEC;
-		}
+        }
 
         public Program()
         {
@@ -56,19 +56,19 @@ namespace IngameScript
 
 
         void refreshBatteries()
-		{
+        {
             long my_grid = Me.CubeGrid.EntityId;
 
             batts.Clear();
             GridTerminalSystem.GetBlocksOfType<IMyBatteryBlock>(batts, bat => bat.CubeGrid.EntityId == my_grid);
-		}
+        }
 
         void refreshCache() {
             txt = (IMyTextSurface) GridTerminalSystem.GetBlockWithName(LCD_NAME);
 
             refreshBatteries();
             AvgMsp = batts.Select(bat => bat.MaxStoredPower).Average();
-		}
+        }
 
         struct BatteryTickResult {
             public float AvgSp;  // Stored Power in MWh
@@ -77,7 +77,7 @@ namespace IngameScript
         }
 
         BatteryTickResult BatteryTick()
-		{
+        {
             BatteryTickResult result;
 
             result.AvgMsp = AvgMsp;
@@ -85,7 +85,7 @@ namespace IngameScript
             result.AvgOp = batts.Select(bat => bat.CurrentOutput).Average();
 
             return result;
-		}
+        }
 
         static void GetPowerTime(StringBuilder sb, int seconds)
         {
@@ -93,7 +93,7 @@ namespace IngameScript
         }
 
         void WriteOut(ref BatteryTickResult br, int power_now, int power_output_5m)
-		{
+        {
             int pb; //Power Bar
 
             float charge_ratio = br.AvgSp / br.AvgMsp;
@@ -122,7 +122,7 @@ namespace IngameScript
             string txtWr = txtBuf.ToString();
             txtBuf.Clear();
             txt.WriteText(txtWr);
-		}
+        }
 
         public void Main(string argument, UpdateType updateSource)
         {
@@ -130,7 +130,7 @@ namespace IngameScript
                 refreshCache();
 
                 reset();
-			}
+            }
 
             BatteryTickResult br = BatteryTick();
 
