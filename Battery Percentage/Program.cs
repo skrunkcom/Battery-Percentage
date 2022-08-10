@@ -24,9 +24,6 @@ namespace IngameScript
     {
         const string LCD_NAME = "LCD [Power]";
 
-        const Func<Func<IMyBatteryBlock, float>, float> batAvg = bat_func => {
-            return batts.Select(bat_func).Average();
-        };
         const int ITERS_PER_SEC = 6;
         const int ITERS_AVG = ITERS_PER_SEC * 60 * 5;
         const int REFRESH_DELAY_SEC = 5;
@@ -64,7 +61,7 @@ namespace IngameScript
 
         void refreshCache() {
             refreshBatteries();
-            AvgMsp = batAvg(bat => bat.MaxStoredPower);
+            AvgMsp = batts.Select(bat => bat.MaxStoredPower).Average();
 		}
 
 
@@ -81,8 +78,8 @@ namespace IngameScript
                 reset();
 			}
 
-            float AvgSp = batAvg(bat=> bat.CurrentStoredPower);
-            float AvgOp = batAvg(bat => bat.CurrentOutput);
+            float AvgSp = batts.Select(bat=> bat.CurrentStoredPower).Average();
+            float AvgOp = batts.Select(bat => bat.CurrentOutput).Average();
 
             int pb; //Power Bar
             int pn; //Power Now
