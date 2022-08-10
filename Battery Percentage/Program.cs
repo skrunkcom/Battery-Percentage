@@ -98,7 +98,7 @@ namespace IngameScript
             pb = br.AvgSp * 10 / br.AvgMsp; // it's good to round down here.
 
             /* Write to LCD */
-            int a = 1;
+            byte a = 1;
             while(a < 10)
             {
                 txtBuf.Append('|');
