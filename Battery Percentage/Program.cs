@@ -71,11 +71,11 @@ namespace IngameScript
             float hours_left = AvgSp / AvgOp;
             pn = (int) (hours_left * 60 * 60); // convert to seconds
 
-            if(pa.Count >= ITERS_AVG)
+            if(prev_averages.Count >= ITERS_AVG)
             {
-                pa.RemoveAt(0);
+                prev_averages.RemoveAt(0);
             }
-            pa.Add(pn);
+            prev_averages.Add(pn);
 
             pa = prev_averages.Sum() / pa.Count;
 
