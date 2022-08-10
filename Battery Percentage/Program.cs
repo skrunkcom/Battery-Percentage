@@ -86,9 +86,9 @@ namespace IngameScript
             return result;
 		}
 
-        static string GetPowerTime(int seconds)
+        static void GetPowerTime(StringBuilder sb, int seconds)
         {
-            return TimeSpan.FromSeconds(seconds).ToString(@"ddd\.hh\:mm\:ss") + " remaining";
+            sb.Append(TimeSpan.FromSeconds(seconds).ToString(@"ddd\.hh\:mm\:ss")).Append(" remaining");
         }
 
         void WriteOut(ref BatteryTickResult br, int power_now, int power_output_5m)
@@ -113,8 +113,10 @@ namespace IngameScript
             }
             txtBuf.AppendLine("|");
 
-            txtBuf.AppendLine(GetPowerTime(power_now));
-            txtBuf.Append(GetPowerTime(power_output_5m)).AppendLine(" (5m)");
+            GetPowerTime(txtBuf, power_now);
+            txtBuf.AppendLine();
+            GetPowerTime(txtBuf, power_output_5m);
+            txtBuf.AppendLine(" (5m)");
 
             string txtWr = txtBuf.ToString();
             txtBuf.Clear();
