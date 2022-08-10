@@ -140,8 +140,8 @@ namespace IngameScript
                 prev_averages.RemoveAt(0);
             }
             prev_averages.Add(power_now);
-
-            WriteOut(ref br, power_now, prev_averages.Sum() / prev_averages.Count);
+            
+            WriteOut(ref br, power_now, (int) (prev_averages.Sum(i => Convert.ToInt64(i)) / prev_averages.Count));
         }
     }
 
